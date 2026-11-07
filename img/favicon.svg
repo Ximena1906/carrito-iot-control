@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e85d9c"/>
+      <stop offset="1" stop-color="#b8226c"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="url(#g)"/>
+  <!-- señal IoT -->
+  <path d="M40 13a11 11 0 0 1 11 11" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/>
+  <path d="M40 19a5 5 0 0 1 5 5" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/>
+  <circle cx="40" cy="24" r="2.4" fill="#fff"/>
+  <!-- carrito -->
+  <path d="M10 41v-6a4 4 0 0 1 4-4h4l5-7h12l4 7h4a4 4 0 0 1 4 4v6z" fill="#fff"/>
+  <path d="M25 26.5h9l2.6 4.5H22z" fill="#f9c5dc"/>
+  <circle cx="19" cy="43" r="6" fill="#3b1a2c" stroke="#fff" stroke-width="3"/>
+  <circle cx="41" cy="43" r="6" fill="#3b1a2c" stroke="#fff" stroke-width="3"/>
+  <circle cx="19" cy="43" r="1.8" fill="#f9c5dc"/>
+  <circle cx="41" cy="43" r="1.8" fill="#f9c5dc"/>
+</svg>
