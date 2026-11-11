@@ -214,15 +214,6 @@ button, .btn { touch-action: manipulation; }
 .progress-bar { background: linear-gradient(90deg, var(--rosa-medio), var(--rosa)); transition: width .3s ease; }
 .demo-detalle { font-size: .78rem; color: var(--gris); margin: 6px 0 0; }
 
-/* --------------------------------------------------------------- mensajes */
-.actividad { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; max-height: 260px; overflow: auto; }
-.actividad li { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: start; font-size: .78rem; padding: 6px 8px; border-radius: 10px; background: var(--fondo); }
-.actividad li i { color: var(--rosa); }
-.actividad li[data-tipo="ok"] i { color: var(--ok); }
-.actividad li[data-tipo="error"] i { color: var(--mal); }
-.act-hora { color: var(--gris); font-variant-numeric: tabular-nums; font-size: .7rem; }
-.act-texto { word-break: break-word; }
-
 /* ------------------------------------------------------------ aviso toast */
 .aviso-toast {
   position: fixed; left: 50%; bottom: calc(16px + env(safe-area-inset-bottom)); transform: translateX(-50%);
@@ -342,7 +333,7 @@ button, .btn { touch-action: manipulation; }
 
   .columna { flex: none; height: 205px; display: flex; flex-direction: column; gap: 6px; }
   .pestanas {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; background: #fff; padding: 4px;
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; background: #fff; padding: 4px;
     border: 1px solid var(--rosa-borde); border-radius: 13px; flex: none;
   }
   .pestanas button {
@@ -353,8 +344,7 @@ button, .btn { touch-action: manipulation; }
   .pestanas button[aria-selected="true"] .punto { background: #fff; }
   .columna .panel { display: none; flex: 1; min-height: 0; overflow: auto; overscroll-behavior: contain; }
   .columna[data-activo="controles"] #panel-controles,
-  .columna[data-activo="demo"] #panel-demo,
-  .columna[data-activo="mensajes"] #panel-mensajes { display: block; }
+  .columna[data-activo="demo"] #panel-demo { display: block; }
   .panel > .tarjeta-cab:first-child { display: none; }
   .tarjeta-cab.sub { display: none; }            /* movimientos y funciones en una sola rejilla */
   #botones-pulso { margin-top: 6px; }
@@ -373,8 +363,6 @@ button, .btn { touch-action: manipulation; }
   .demo-acciones { margin-top: 8px; }
   .btn-rosa, .btn-contorno { min-height: 42px; }
   .demo-progreso { margin-top: 8px; }
-  .actividad { max-height: none; }
-  .actividad li { font-size: .7rem; padding: 5px 7px; }
 
   /* Créditos en una línea al pie */
   .pie { flex: none; margin-top: 6px; padding: 4px 10px calc(4px + env(safe-area-inset-bottom)); font-size: .68rem; }

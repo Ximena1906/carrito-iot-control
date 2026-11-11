@@ -6,7 +6,7 @@
 import { api, configurarAutenticacion } from '../api/cliente.js';
 import { actualizar, obtener } from '../estado.js';
 import { mensajeDeError } from '../utils/errores.js';
-import { avisar, registrar } from './mensajes.js';
+import { avisar } from './mensajes.js';
 
 const CLAVE = 'carrito_iot_sesion';
 
@@ -58,7 +58,7 @@ export function iniciarSesionUI({ alCambiar }) {
   const cerrar = () => (typeof dialogo.close === 'function' ? dialogo.close() : dialogo.removeAttribute('open'));
 
   btnSesion.addEventListener('click', () => {
-    if (obtener('sesion')) { cerrarSesion(); registrar('Sesión cerrada', 'info'); }
+    if (obtener('sesion')) cerrarSesion();
     else abrir();
   });
   document.getElementById('btn-sesion-cerrar').addEventListener('click', cerrar);
@@ -81,7 +81,6 @@ export function iniciarSesionUI({ alCambiar }) {
       actualizar('sesion', sesion);
       cerrar();
       avisar(`Sesión iniciada como ${usuario}`, 'ok');
-      registrar(`Sesión iniciada (${sesion.rol})`, 'ok');
     } catch (err) {
       error.textContent = err?.status === 401 ? 'Usuario o contraseña incorrectos.' : mensajeDeError(err);
     } finally {

@@ -14,8 +14,7 @@ import { cargarDemos, eventoDemo, iniciarDemos } from './demo/demos.js';
 import { iniciarIndicadores } from './ui/indicadores.js';
 import { iniciarSesionUI } from './ui/sesion.js';
 import { iniciarPestanas } from './ui/pestanas.js';
-import { avisar, registrar } from './ui/mensajes.js';
-import { mensajeDeError } from './utils/errores.js';
+import { avisar } from './ui/mensajes.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -68,22 +67,16 @@ function alEventoWs(ev) {
   switch (ev.tipo) {
     case 'estado_inicial':
       actualizar('dispositivo', Boolean(ev.dispositivo_conectado));
-      registrar(`WS: estado inicial · último comando ${ev.comando || 'ninguno'}`, 'ws');
       if (!ev.demo_en_curso && obtener('demoEnCurso')) actualizar('demoEnCurso', null);
       break;
     case 'movimiento':
       eventoMovimiento(ev);
-      registrar(`WS: ${PRESENTACION[ev.comando]?.texto || ev.comando} (código ${ev.codigo}) · origen ${ev.origen}`, 'ws');
       break;
     case 'dispositivo':
       actualizar('dispositivo', Boolean(ev.conectado));
-      registrar(`WS: ESP32 ${ev.conectado ? 'conectado' : 'desconectado'}`, 'ws');
-      break;
-    case 'ack_dispositivo':
-      registrar(`WS: ESP32 confirmó recepción (${ev.resultado || 'sin detalle'})`, 'ws');
       break;
     case 'error':
-      registrar(`WS: ${ev.mensaje || 'error del servidor'}`, 'error');
+      avisar(`Servidor: ${ev.mensaje || 'error del servidor'}`, 'error');
       break;
     default:
       if (ev.tipo.startsWith('demo_')) eventoDemo(ev);
@@ -111,7 +104,6 @@ async function cargarVehiculo() {
     return true;
   } catch (e) {
     $('vehiculo-detalle').textContent = 'No se pudo cargar el vehículo';
-    registrar(`Vehículo: ${mensajeDeError(e)}`, 'error');
     return false;
   }
 }

@@ -45,7 +45,7 @@ carrito-iot-control/
         ├── demo/demos.js        # Selección, inicio, cancelación y progreso de DEMO
         ├── ui/indicadores.js    # Tres indicadores independientes
         ├── ui/sesion.js         # Inicio de sesión del operador
-        ├── ui/mensajes.js       # Avisos y mensajes recientes
+        ├── ui/mensajes.js       # Avisos breves (toast)
         └── utils/               # dom.js (inserción segura), errores.js
 ```
 

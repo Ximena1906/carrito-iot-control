@@ -7,7 +7,7 @@ import { actualizar, obtener, suscribir } from '../estado.js';
 import { crear } from '../utils/dom.js';
 import { mensajeDeError } from '../utils/errores.js';
 import { PRESENTACION } from '../config.js';
-import { avisar, registrar } from '../ui/mensajes.js';
+import { avisar } from '../ui/mensajes.js';
 
 const $ = (id) => document.getElementById(id);
 let ocupado = false;
@@ -55,7 +55,6 @@ export async function cargarDemos() {
   } catch (e) {
     actualizar('demos', []);
     select.replaceChildren(crear('option', { texto: 'No se pudieron cargar las DEMO' }));
-    registrar(`DEMO: ${mensajeDeError(e)}`, 'error');
   }
   try {
     const r = await api.demoEnCurso();
@@ -71,10 +70,8 @@ async function iniciar() {
   try {
     const r = await api.iniciarDemo(id);
     if (!obtener('demoEnCurso')) actualizar('demoEnCurso', { ...r, paso: 0 });
-    registrar(`API aceptó DEMO «${r.nombre}» (${r.total_pasos} pasos) · HTTP 202`, 'ok');
   } catch (e) {
     avisar(`DEMO: ${mensajeDeError(e)}`, 'error');
-    registrar(`DEMO: ${mensajeDeError(e)}`, 'error');
   } finally { ocupado = false; pintar(); }
 }
 
@@ -82,7 +79,6 @@ async function cancelar() {
   ocupado = true; pintar();
   try {
     const r = await api.cancelarDemo();
-    registrar(r.estado === 'cancelada' ? 'Cancelación de DEMO aceptada por la API' : 'No había DEMO en curso', 'info');
     if (r.estado === 'sin_demo') actualizar('demoEnCurso', null);
   } catch (e) {
     avisar(`Cancelar: ${mensajeDeError(e)}`, 'error');
@@ -95,11 +91,9 @@ export function eventoDemo(ev) {
   switch (ev.tipo) {
     case 'demo_inicio':
       actualizar('demoEnCurso', { id_demo: ev.id_demo, nombre: ev.nombre, total_pasos: ev.total_pasos, paso: 0 });
-      registrar(`WS: inicio de DEMO «${ev.nombre}» (${ev.total_pasos} pasos)`, 'ws');
       break;
     case 'demo_paso':
       actualizar('demoEnCurso', { ...(actual || { id_demo: ev.id_demo, nombre: '' }), ...ev });
-      registrar(`WS: paso ${ev.paso}/${ev.total_pasos} ${textoComando(ev.comando)} (código ${ev.codigo})`, 'ws');
       break;
     case 'demo_fin':
     case 'demo_cancelada': {
@@ -109,7 +103,6 @@ export function eventoDemo(ev) {
       $('demo-detalle').textContent = fin
         ? `«${ev.nombre}» terminó: ${ev.total_pasos} pasos ejecutados por el servidor.`
         : `«${ev.nombre}» cancelada (${String(ev.motivo || '').replaceAll('_', ' ').toLowerCase()}).`;
-      registrar(`WS: DEMO ${fin ? 'finalizada' : 'cancelada'}`, 'ws');
       break;
     }
     default:

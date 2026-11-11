@@ -21,10 +21,6 @@ export function icono(clase) {
   return crear('i', { clase: `bi ${clase}`, atributos: { 'aria-hidden': 'true' } });
 }
 
-export function horaCorta(fecha = new Date()) {
-  return fecha.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-}
-
 /** Solo permite clases de icono conocidas (defensa ante datos inesperados). */
 export function iconoSeguro(clase) {
   return /^bi-[a-z0-9-]+$/.test(clase) ? clase : 'bi-circle';

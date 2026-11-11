@@ -14,7 +14,7 @@ import { CONFIG, COMANDO_DETENER, PRESENTACION } from '../config.js';
 import { api } from '../api/cliente.js';
 import { actualizar, obtener, puedeMover } from '../estado.js';
 import { mensajeDeError } from '../utils/errores.js';
-import { avisar, registrar } from '../ui/mensajes.js';
+import { avisar } from '../ui/mensajes.js';
 
 let secuencia = 0;
 let enVuelo = null;          // acción enviada y sin respuesta
@@ -47,12 +47,10 @@ async function enviar(accion) {
     });
     accion.detalle = `HTTP 200 · ${r.comando} (código ${r.codigo}) · ${r.duracion_ms} ms`;
     exito = true;
-    if (!accion.renovacion) registrar(`API aceptó ${texto(r.comando)}`, 'ok');
   } catch (error) {
     pintar(accion, { etapa: 'error', detalle: mensajeDeError(error) });
     if (accion.nombre !== COMANDO_DETENER) soltarSostenido(false);
     avisar(`${texto(accion.nombre)}: ${mensajeDeError(error)}`, 'error');
-    registrar(`Error en ${texto(accion.nombre)}: ${mensajeDeError(error)}`, 'error');
   } finally {
     enVuelo = null;
     if (pendiente) {

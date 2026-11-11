@@ -9,7 +9,6 @@ import { CONFIG } from '../config.js';
 import { api } from '../api/cliente.js';
 import { actualizar, obtener, suscribir } from '../estado.js';
 import { crear, icono } from '../utils/dom.js';
-import { registrar } from './mensajes.js';
 
 const VISTA = {
   ws: {
@@ -69,17 +68,10 @@ async function comprobarRds() {
 }
 
 export function iniciarIndicadores() {
-  let anterior = {};
-  const anunciar = (clave, valor, texto) => {
-    if (anterior[clave] && anterior[clave] !== valor) registrar(texto, valor === 'disponible' || valor === 'en_linea' ? 'ok' : 'error');
-    anterior[clave] = valor;
-  };
-
-  suscribir('ws', (v) => { pintar('ind-ws', v); anunciar('ws', v, `WebSocket: ${VISTA.ws[v][1]}`); });
-  suscribir('api', (v) => { pintar('ind-api', v); anunciar('api', v, `Servidor AWS: ${VISTA.api[v][1]}`); });
+  suscribir('ws', (v) => pintar('ind-ws', v));
+  suscribir('api', (v) => pintar('ind-api', v));
   suscribir('rds', (v) => {
     pintar('ind-rds', v.estado, v.estado === 'disponible' && v.latencia ? ` · ${Math.round(v.latencia)} ms` : '');
-    anunciar('rds', v.estado, `Amazon RDS: ${VISTA.rds[v.estado][1]}`);
   });
 
   const ciclo = async () => { await comprobarApi(); await comprobarRds(); };
