@@ -104,8 +104,8 @@ button, .btn { touch-action: manipulation; }
   width: calc(var(--u) * 100); height: calc(var(--u) * 52);
   display: grid;
   grid-template-columns: calc(var(--u) * 31) 1fr calc(var(--u) * 31);
-  grid-template-rows: calc(var(--u) * 4) 1fr;
-  grid-template-areas: "izq cab der" "izq centro der";
+  grid-template-rows: auto 1fr;
+  grid-template-areas: "cab cab cab" "izq centro der";
   padding: calc(var(--u) * 3) calc(var(--u) * 3) calc(var(--u) * 2);
   background:
     radial-gradient(ellipse 70% 60% at 50% 0%, rgba(255, 255, 255, .07), transparent 60%),
@@ -130,13 +130,26 @@ button, .btn { touch-action: manipulation; }
 .mando.bloqueado .joystick, .mando.bloqueado .btn-comando { filter: saturate(.4); }
 
 /* Franja superior (estado del ESP32) */
-.mando-cab { grid-area: cab; display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 0; }
+.mando-cab { grid-area: cab; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 3px 6px; min-width: 0; align-content: flex-start; }
+.mando-cab .pista { margin-left: 6px; }
 .chip-dispositivo {
   display: inline-flex; align-items: center; gap: 5px; font-weight: 700; font-size: .85em; border-radius: 999px;
   padding: 2px 10px; background: var(--hundido); color: var(--neutro); border: 1px solid var(--borde); white-space: nowrap;
 }
 .chip-dispositivo[data-conectado="true"] { color: var(--ok); border-color: rgba(52, 211, 153, .5); box-shadow: 0 0 8px rgba(52, 211, 153, .35); }
 .pista { font-size: .75em; color: var(--gris); white-space: nowrap; }
+
+/* Estado supuesto de luces y bocina (se corrige tocando el chip; no envía comando) */
+.accesorios { display: contents; }
+.chip-accesorio {
+  display: inline-flex; align-items: center; gap: 5px; font-weight: 800; font-size: .85em; border-radius: 999px;
+  padding: 2px 9px; background: var(--hundido); color: var(--neutro); border: 1px solid var(--borde); white-space: nowrap; line-height: 1.5;
+}
+.chip-accesorio .bi-arrow-repeat { font-size: .85em; opacity: .55; }
+.chip-accesorio:hover .bi-arrow-repeat, .chip-accesorio:focus-visible .bi-arrow-repeat { opacity: 1; }
+.chip-accesorio[data-encendido="true"] { color: #fff; border-color: rgba(255, 79, 163, .7); background: rgba(255, 79, 163, .14); box-shadow: 0 0 8px rgba(255, 79, 163, .45); }
+.chip-accesorio[data-encendido="true"] > i:first-child { color: #ffe066; filter: drop-shadow(0 0 4px rgba(255, 224, 102, .8)); }
+.chip-accesorio[data-encendido="false"] { text-decoration: none; }
 
 /* ----------------------------------------------- gatillos y bumpers (hombros) */
 .hombros {
@@ -226,6 +239,14 @@ button, .btn { touch-action: manipulation; }
 .abxy [data-pos="X"] .pos { color: #c084fc; }
 .abxy [data-pos="Y"] .pos { color: #ffd1e8; }
 .abxy .btn-comando:hover { border-color: var(--neon); }
+/* Luces y bocina encendidas: anillo neón y etiqueta ON/OFF */
+.abxy .btn-comando[data-encendido="true"] { border-color: var(--neon); box-shadow: 0 0 0 2px rgba(255, 79, 163, .55), 0 0 14px rgba(255, 79, 163, .55), inset 0 calc(var(--u) * -.4) calc(var(--u) * .8) rgba(0, 0, 0, .6); }
+.abxy .btn-comando[data-encendido="true"] i { color: #ffe066; opacity: 1; }
+.btn-comando .estado {
+  position: absolute; top: 0; left: 50%; transform: translate(-50%, -75%); font-size: .58em; font-weight: 900; letter-spacing: .3px;
+  padding: 0 5px; border-radius: 999px; line-height: 1.5; background: #2b2731; color: var(--gris); border: 1px solid var(--borde);
+}
+.btn-comando[data-encendido="true"] .estado { background: var(--neon); color: #fff; border-color: var(--neon); }
 .abxy .btn-comando.presionado { transform: scale(.94); box-shadow: var(--neon-brillo); border-color: var(--neon); }
 
 /* Estados comunes de los botones del catálogo */
@@ -423,7 +444,7 @@ button, .btn { touch-action: manipulation; }
     margin: var(--hh) 0 calc(var(--u) * 5);
     width: calc(var(--u) * 100); height: calc(var(--u) * 132);
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: calc(var(--u) * 5) calc(var(--u) * 58) 1fr;
+    grid-template-rows: auto calc(var(--u) * 56) 1fr;
     grid-template-areas: "cab cab" "izq der" "centro centro";
     padding: calc(var(--u) * 3) calc(var(--u) * 3) calc(var(--u) * 4);
     border-radius: calc(var(--u) * 10) calc(var(--u) * 10) calc(var(--u) * 14) calc(var(--u) * 14);
@@ -448,6 +469,9 @@ button, .btn { touch-action: manipulation; }
   .btn-mini { min-height: 34px; width: 38px; }
   .etapas li { font-size: .68em; }
   .aviso-sesion { bottom: calc(var(--u) * -4.4); font-size: .72rem; }
+  .mando-cab { gap: 4px; flex-wrap: nowrap; }
+  .chip-dispositivo, .chip-accesorio { font-size: .8em; padding: 2px 7px; gap: 4px; }
+  .chip-accesorio .bi-arrow-repeat { font-size: .75em; }
 }
 
 /* Teléfonos bajitos en vertical (p. ej. iPhone SE) */

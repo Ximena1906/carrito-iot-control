@@ -14,6 +14,7 @@ import { cargarDemos, eventoDemo, iniciarDemos } from './demo/demos.js';
 import { iniciarIndicadores } from './ui/indicadores.js';
 import { iniciarSesionUI } from './ui/sesion.js';
 import { avisar } from './ui/mensajes.js';
+import { confirmarDispositivo, iniciarAccesorios, pintarAccesorios, registrarMovimiento } from './ui/accesorios.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -70,6 +71,10 @@ function alEventoWs(ev) {
       break;
     case 'movimiento':
       eventoMovimiento(ev);
+      registrarMovimiento(ev);
+      break;
+    case 'ack_dispositivo':
+      confirmarDispositivo(ev);
       break;
     case 'dispositivo':
       actualizar('dispositivo', Boolean(ev.conectado));
@@ -99,6 +104,7 @@ async function cargarVehiculo() {
     );
     actualizar('comandos', activos);
     renderizarBotones(activos, contSostenidos, contPulsos);
+    pintarAccesorios();
     aplicarDisponibilidad();
     return true;
   } catch (e) {
@@ -118,6 +124,7 @@ iniciarIndicadores();
 const pintarSesion = iniciarSesionUI({ alCambiar: aplicarDisponibilidad });
 suscribir('sesion', pintarSesion);
 iniciarDemos();
+iniciarAccesorios();
 activarTeclado();
 
 suscribir('demoEnCurso', (demo) => {

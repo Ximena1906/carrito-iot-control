@@ -20,6 +20,7 @@ API FastAPI en AWS EC2 (Caddy HTTPS/WSS) ──► Stored Procedures ──► A
 | Diseño | Página estática: todo cabe en una pantalla, sin desplazamiento, en compu y celular (vertical u horizontal). El control se escala con una sola unidad CSS (`--u`). |
 | Joystick | Stick izquierdo del control. Pointer Events (mouse, táctil, lápiz) y flechas del teclado. Arriba `AVANZAR`, abajo `RETROCEDER`, izquierda `MOVER_IZQUIERDA`, derecha `MOVER_DERECHA`. Zona neutral, histéresis y retorno al centro. Envía **un solo POST por cambio de dirección**; al soltar envía `DETENER`. |
 | Botones | Generados con el **catálogo real** (`GET /vehiculos/1/comandos`) y acomodados como en un gamepad. Gatillos **LT/RT**: giro izquierdo/derecho; bumpers **LB/RB**: garra arriba/abajo (mantener presionado). **A** bocina, **B** demo del control, **X** velocidad, **Y** luces (un toque). |
+| Luces y bocina | Indicador **ON/OFF** en los chips de arriba y en los botones Y y A. El control remoto no informa su estado, así que es un estado **supuesto**: empieza en ON (así arranca el carrito), cambia solo cuando el ESP32 confirma que presionó el botón (`ack_dispositivo` «ejecutado») y vuelve a ON al recargar. Tocar el chip corrige el indicador **sin enviar comando**. |
 | DETENER | Prioridad máxima: reemplaza cualquier pendiente, cancela renovaciones y funciona durante una DEMO (la cancela). |
 | DEMO | Lista las DEMO existentes, inicia (`POST .../demos/{id}/iniciar`) y cancela (`POST .../demos/cancelar`). Progreso por eventos WebSocket. Sin CRUD. |
 | Indicadores | **WebSocket WSS** (En línea / Conectando-Reconectando / Desconectado), **Servidor AWS · API 21 servicios** (`GET /health`) y **Amazon RDS** (`GET /health/db`; «Sin verificar» si no se puede consultar). |
@@ -47,6 +48,7 @@ carrito-iot-control/
         ├── ui/indicadores.js    # Tres indicadores independientes
         ├── ui/sesion.js         # Inicio de sesión del operador
         ├── ui/mensajes.js       # Avisos breves (toast)
+        ├── ui/accesorios.js     # Estado supuesto ON/OFF de luces y bocina
         └── utils/               # dom.js (inserción segura), errores.js
 ```
 
