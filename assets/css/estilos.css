@@ -139,17 +139,6 @@ button, .btn { touch-action: manipulation; }
 .chip-dispositivo[data-conectado="true"] { color: var(--ok); border-color: rgba(52, 211, 153, .5); box-shadow: 0 0 8px rgba(52, 211, 153, .35); }
 .pista { font-size: .75em; color: var(--gris); white-space: nowrap; }
 
-/* Estado supuesto de luces y bocina (se corrige tocando el chip; no envía comando) */
-.accesorios { display: contents; }
-.chip-accesorio {
-  display: inline-flex; align-items: center; gap: 5px; font-weight: 800; font-size: .85em; border-radius: 999px;
-  padding: 2px 9px; background: var(--hundido); color: var(--neutro); border: 1px solid var(--borde); white-space: nowrap; line-height: 1.5;
-}
-.chip-accesorio .bi-arrow-repeat { font-size: .85em; opacity: .55; }
-.chip-accesorio:hover .bi-arrow-repeat, .chip-accesorio:focus-visible .bi-arrow-repeat { opacity: 1; }
-.chip-accesorio[data-encendido="true"] { color: #fff; border-color: rgba(255, 79, 163, .7); background: rgba(255, 79, 163, .14); box-shadow: 0 0 8px rgba(255, 79, 163, .45); }
-.chip-accesorio[data-encendido="true"] > i:first-child { color: #ffe066; filter: drop-shadow(0 0 4px rgba(255, 224, 102, .8)); }
-.chip-accesorio[data-encendido="false"] { text-decoration: none; }
 
 /* ----------------------------------------------- gatillos y bumpers (hombros) */
 .hombros {
@@ -238,10 +227,18 @@ button, .btn { touch-action: manipulation; }
 .abxy [data-pos="B"] .pos { color: #ff7ac2; }
 .abxy [data-pos="X"] .pos { color: #c084fc; }
 .abxy [data-pos="Y"] .pos { color: #ffd1e8; }
-.abxy .btn-comando:hover { border-color: var(--neon); }
-/* Luces y bocina encendidas: anillo neón y etiqueta ON/OFF */
-.abxy .btn-comando[data-encendido="true"] { border-color: var(--neon); box-shadow: 0 0 0 2px rgba(255, 79, 163, .55), 0 0 14px rgba(255, 79, 163, .55), inset 0 calc(var(--u) * -.4) calc(var(--u) * .8) rgba(0, 0, 0, .6); }
-.abxy .btn-comando[data-encendido="true"] i { color: #ffe066; opacity: 1; }
+@media (hover: hover) { .abxy .btn-comando:hover { border-color: var(--neon); } }
+/* Luces (Y) y bocina (A): el botón se ve PRENDIDO cuando está en ON y APAGADO en OFF */
+.abxy .btn-comando[data-encendido="true"] {
+  background: radial-gradient(circle at 40% 30%, #ff8cc6, var(--neon) 55%, #b8226c);
+  border-color: #ffd1e8;
+  box-shadow: 0 0 0 2px rgba(255, 79, 163, .6), 0 0 18px rgba(255, 79, 163, .8), 0 0 36px rgba(255, 79, 163, .4);
+}
+.abxy .btn-comando[data-encendido="true"] .pos { color: #fff; text-shadow: 0 0 8px rgba(255, 255, 255, .7); }
+.abxy .btn-comando[data-encendido="true"] i { color: #ffe066; opacity: 1; filter: drop-shadow(0 0 4px rgba(255, 224, 102, .9)); }
+.abxy .btn-comando[data-encendido="true"] .nombre { color: var(--neon); }
+.abxy .btn-comando[data-encendido="false"] { background: radial-gradient(circle at 40% 30%, #2a2630, #141118 70%); }
+.abxy .btn-comando[data-encendido="false"] .pos, .abxy .btn-comando[data-encendido="false"] i { opacity: .45; }
 .btn-comando .estado {
   position: absolute; top: 0; left: 50%; transform: translate(-50%, -75%); font-size: .58em; font-weight: 900; letter-spacing: .3px;
   padding: 0 5px; border-radius: 999px; line-height: 1.5; background: #2b2731; color: var(--gris); border: 1px solid var(--borde);
@@ -259,7 +256,7 @@ button, .btn { touch-action: manipulation; }
 .abxy .btn-comando kbd { top: -2px; right: -2px; }
 .hombros .btn-comando { position: relative; }
 .hombros .btn-comando kbd { top: 3px; right: 5px; }
-.hombros .btn-comando:hover { border-color: var(--neon); color: #fff; }
+@media (hover: hover) { .hombros .btn-comando:hover { border-color: var(--neon); color: #fff; } }
 .hombros .btn-comando.presionado { background: linear-gradient(180deg, var(--neon), #b8226c); color: #fff; box-shadow: var(--neon-brillo); }
 .hombros .btn-comando.presionado .pos { color: #fff; }
 .btn-comando:disabled { opacity: .4; }
@@ -469,9 +466,6 @@ button, .btn { touch-action: manipulation; }
   .btn-mini { min-height: 34px; width: 38px; }
   .etapas li { font-size: .68em; }
   .aviso-sesion { bottom: calc(var(--u) * -4.4); font-size: .72rem; }
-  .mando-cab { gap: 4px; flex-wrap: nowrap; }
-  .chip-dispositivo, .chip-accesorio { font-size: .8em; padding: 2px 7px; gap: 4px; }
-  .chip-accesorio .bi-arrow-repeat { font-size: .75em; }
 }
 
 /* Teléfonos bajitos en vertical (p. ej. iPhone SE) */

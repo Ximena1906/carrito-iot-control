@@ -14,7 +14,7 @@ import { cargarDemos, eventoDemo, iniciarDemos } from './demo/demos.js';
 import { iniciarIndicadores } from './ui/indicadores.js';
 import { iniciarSesionUI } from './ui/sesion.js';
 import { avisar } from './ui/mensajes.js';
-import { confirmarDispositivo, iniciarAccesorios, pintarAccesorios, registrarMovimiento } from './ui/accesorios.js';
+import { pintarAccesorios, registrarMovimiento } from './ui/accesorios.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -73,9 +73,6 @@ function alEventoWs(ev) {
       eventoMovimiento(ev);
       registrarMovimiento(ev);
       break;
-    case 'ack_dispositivo':
-      confirmarDispositivo(ev);
-      break;
     case 'dispositivo':
       actualizar('dispositivo', Boolean(ev.conectado));
       break;
@@ -124,7 +121,6 @@ iniciarIndicadores();
 const pintarSesion = iniciarSesionUI({ alCambiar: aplicarDisponibilidad });
 suscribir('sesion', pintarSesion);
 iniciarDemos();
-iniciarAccesorios();
 activarTeclado();
 
 suscribir('demoEnCurso', (demo) => {
