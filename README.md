@@ -1,6 +1,6 @@
 # Carrito IoT · Aplicación de CONTROL
 
-Aplicación web **Mobile First** para controlar el Carrito IoT (ESP32 + 2× 74HC595) a través de la
+Aplicación web **Mobile First** con diseño de **control tipo gamepad** (oscuro con brillos rosa neón) para controlar el Carrito IoT (ESP32 + 2× 74HC595) a través de la
 API FastAPI desplegada en AWS. Publicada en **GitHub Pages**.
 
 - **Sitio:** https://ximena1906.github.io/carrito-iot-control/
@@ -17,8 +17,9 @@ API FastAPI en AWS EC2 (Caddy HTTPS/WSS) ──► Stored Procedures ──► A
 ## Funciones
 | Elemento | Detalle |
 |---|---|
-| Joystick | Pointer Events (mouse, táctil, lápiz) y flechas del teclado. Arriba `AVANZAR`, abajo `RETROCEDER`, izquierda `MOVER_IZQUIERDA`, derecha `MOVER_DERECHA`. Zona neutral, histéresis y retorno al centro. Envía **un solo POST por cambio de dirección**; al soltar envía `DETENER`. |
-| Botones | Generados con el **catálogo real** (`GET /vehiculos/1/comandos`). Sostenidos: giros y garra (mantener presionado). Funciones de un toque: luces, bocina, velocidad, demo del control. |
+| Diseño | Página estática: todo cabe en una pantalla, sin desplazamiento, en compu y celular (vertical u horizontal). El control se escala con una sola unidad CSS (`--u`). |
+| Joystick | Stick izquierdo del control. Pointer Events (mouse, táctil, lápiz) y flechas del teclado. Arriba `AVANZAR`, abajo `RETROCEDER`, izquierda `MOVER_IZQUIERDA`, derecha `MOVER_DERECHA`. Zona neutral, histéresis y retorno al centro. Envía **un solo POST por cambio de dirección**; al soltar envía `DETENER`. |
+| Botones | Generados con el **catálogo real** (`GET /vehiculos/1/comandos`) y acomodados como en un gamepad. Gatillos **LT/RT**: giro izquierdo/derecho; bumpers **LB/RB**: garra arriba/abajo (mantener presionado). **A** bocina, **B** demo del control, **X** velocidad, **Y** luces (un toque). |
 | DETENER | Prioridad máxima: reemplaza cualquier pendiente, cancela renovaciones y funciona durante una DEMO (la cancela). |
 | DEMO | Lista las DEMO existentes, inicia (`POST .../demos/{id}/iniciar`) y cancela (`POST .../demos/cancelar`). Progreso por eventos WebSocket. Sin CRUD. |
 | Indicadores | **WebSocket WSS** (En línea / Conectando-Reconectando / Desconectado), **Servidor AWS · API 21 servicios** (`GET /health`) y **Amazon RDS** (`GET /health/db`; «Sin verificar» si no se puede consultar). |
@@ -30,7 +31,7 @@ API FastAPI en AWS EC2 (Caddy HTTPS/WSS) ──► Stored Procedures ──► A
 carrito-iot-control/
 ├── index.html               # Estructura semántica
 └── assets/
-    ├── css/estilos.css      # Tema rosa, Mobile First, horizontal y escritorio
+    ├── css/estilos.css      # Gamepad oscuro rosa neón, sin scroll en celular y escritorio
     ├── img/                 # Favicon propio (SVG + PNG + apple-touch-icon)
     └── js/
         ├── app.js               # Arranque y enlace de vistas (sin reglas de negocio)

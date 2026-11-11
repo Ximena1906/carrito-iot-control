@@ -8,19 +8,35 @@ import { PRESENTACION } from '../config.js';
 import { crear, icono, iconoSeguro } from '../utils/dom.js';
 import { iniciarSostenido, pulso, terminarSostenido } from './comandos.js';
 
+/**
+ * Lugar de cada comando en el control tipo gamepad:
+ * gatillos (LT/RT) = giros, bumpers (LB/RB) = garra, A B X Y = funciones.
+ * Solo cambia la posición visual; el comando que se envía es el mismo.
+ */
+const POSICION = Object.freeze({
+  GIRAR_IZQUIERDA: 'LT', SUBIR_BRAZO: 'LB', BAJAR_BRAZO: 'RB', GIRAR_DERECHA: 'RT',
+  BOCINA: 'A', DEMO_CONTROL: 'B', VELOCIDAD: 'X', LUCES: 'Y',
+});
+
 function crearBoton(comando, tipo) {
   const p = PRESENTACION[comando.nombre] || {};
   const etiqueta = p.texto || comando.nombre;
   const atajo = p.tecla ? p.tecla.toUpperCase() : null;
+  const posicion = POSICION[comando.nombre] || null;
   const boton = crear('button', {
     clase: `btn btn-comando ${tipo}`,
     atributos: {
       type: 'button',
       'data-comando': comando.nombre,
+      'data-pos': posicion,
       title: `${comando.descripcion || etiqueta}${atajo ? ` (tecla ${atajo})` : ''}`,
       'aria-keyshortcuts': atajo,
     },
-  }, [icono(iconoSeguro(p.icono || 'bi-circle')), crear('span', { texto: etiqueta })]);
+  }, [
+    posicion ? crear('b', { clase: 'pos', texto: posicion, atributos: { 'aria-hidden': 'true' } }) : null,
+    icono(iconoSeguro(p.icono || 'bi-circle')),
+    crear('span', { clase: 'nombre', texto: etiqueta }),
+  ].filter(Boolean));
   if (atajo) boton.append(crear('kbd', { texto: atajo, atributos: { 'aria-hidden': 'true' } }));
   return boton;
 }

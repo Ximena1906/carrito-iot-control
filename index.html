@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="description" content="Aplicación web de control del Carrito IoT (ESP32) con joystick, botones, DEMO y WebSocket.">
-  <meta name="theme-color" content="#d63384">
+  <meta name="theme-color" content="#120f17">
   <title>Carrito IoT · Control</title>
 
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
@@ -26,28 +26,14 @@
 
   <!-- ===================== Encabezado ===================== -->
   <header class="barra">
-    <div class="contenedor barra-in">
-      <div class="marca">
-        <img src="assets/img/favicon.svg" alt="" width="40" height="40">
-        <div class="marca-texto">
-          <h1 id="vehiculo-nombre">Carrito IoT</h1>
-          <p id="vehiculo-detalle" class="mb-0">Cargando vehículo…</p>
-        </div>
-      </div>
-      <div class="sesion">
-        <span id="sesion-estado" class="chip-sesion" hidden>
-          <i class="bi bi-person-check-fill" aria-hidden="true"></i>
-          <span id="sesion-usuario">operador</span>
-        </span>
-        <button id="btn-sesion" class="btn btn-sesion" type="button">
-          <i class="bi bi-box-arrow-in-right" aria-hidden="true"></i>
-          <span>Iniciar sesión</span>
-        </button>
+    <div class="marca">
+      <img src="assets/img/favicon.svg" alt="" width="40" height="40">
+      <div class="marca-texto">
+        <h1 id="vehiculo-nombre">Carrito IoT</h1>
+        <p id="vehiculo-detalle" class="mb-0">Cargando vehículo…</p>
       </div>
     </div>
-  </header>
 
-  <main class="contenedor">
     <!-- ===================== Conectividad ===================== -->
     <section class="conectividad" aria-labelledby="titulo-conectividad">
       <h2 id="titulo-conectividad" class="visually-hidden">Estado de conectividad</h2>
@@ -73,38 +59,59 @@
         </div>
       </div>
     </section>
-    <p class="nota-conexion">
-      <i class="bi bi-info-circle" aria-hidden="true"></i>
-      «En línea» indica la conexión de este navegador con el servidor; no confirma que el carrito físico esté conectado.
-      <span id="dispositivo-estado" class="chip-dispositivo" data-conectado="false">
-        <i class="bi bi-cpu" aria-hidden="true"></i><span>ESP32: sin señal</span>
+
+    <div class="sesion">
+      <span id="sesion-estado" class="chip-sesion" hidden>
+        <i class="bi bi-person-check-fill" aria-hidden="true"></i>
+        <span id="sesion-usuario">operador</span>
       </span>
-    </p>
+      <button id="btn-sesion" class="btn btn-sesion" type="button">
+        <i class="bi bi-box-arrow-in-right" aria-hidden="true"></i>
+        <span>Iniciar sesión</span>
+      </button>
+    </div>
+  </header>
 
-    <div class="tablero">
-      <!-- ===================== Control principal ===================== -->
-      <section id="control" class="tarjeta tarjeta-control" aria-labelledby="titulo-control">
-        <div class="tarjeta-cab">
-          <h2 id="titulo-control"><i class="bi bi-joystick" aria-hidden="true"></i> Control</h2>
-          <span class="pista d-none d-md-inline">Teclado: W A S D · Q detiene</span>
-        </div>
+  <!-- ===================== Control (tipo gamepad) ===================== -->
+  <main class="escenario">
+    <section id="control" class="mando" aria-labelledby="titulo-control">
+      <h2 id="titulo-control" class="visually-hidden">Control del carrito</h2>
 
+      <!-- Gatillos y bumpers: movimientos que se mantienen presionados -->
+      <div id="botones-sostenidos" class="hombros" aria-label="Movimientos: mantén presionado">
+        <p class="cargando">Cargando catálogo…</p>
+      </div>
+
+      <!-- Franja superior: estado del ESP32 -->
+      <div class="mando-cab">
+        <span id="dispositivo-estado" class="chip-dispositivo" data-conectado="false"
+              title="«En línea» indica la conexión de este navegador con el servidor; no confirma que el carrito físico esté conectado.">
+          <i class="bi bi-cpu" aria-hidden="true"></i><span>ESP32: sin señal</span>
+        </span>
+        <span class="pista">Teclado: W A S D · Q detiene</span>
+      </div>
+
+      <!-- Stick izquierdo -->
+      <div class="lado lado-izq">
         <div class="zona-joystick">
           <div id="joystick" class="joystick" tabindex="0" role="application"
                aria-label="Joystick. Arrastra o usa las flechas: arriba avanzar, abajo retroceder, izquierda y derecha desplazar. Al soltar se detiene."
                aria-describedby="joystick-dir">
-            <span class="flecha arriba" aria-hidden="true"><i class="bi bi-chevron-up"></i></span>
-            <span class="flecha abajo" aria-hidden="true"><i class="bi bi-chevron-down"></i></span>
-            <span class="flecha izquierda" aria-hidden="true"><i class="bi bi-chevron-left"></i></span>
-            <span class="flecha derecha" aria-hidden="true"><i class="bi bi-chevron-right"></i></span>
+            <span class="flecha arriba" aria-hidden="true"><i class="bi bi-caret-up-fill"></i></span>
+            <span class="flecha abajo" aria-hidden="true"><i class="bi bi-caret-down-fill"></i></span>
+            <span class="flecha izquierda" aria-hidden="true"><i class="bi bi-caret-left-fill"></i></span>
+            <span class="flecha derecha" aria-hidden="true"><i class="bi bi-caret-right-fill"></i></span>
             <span class="neutral" aria-hidden="true"></span>
             <span id="joystick-perilla" class="perilla" aria-hidden="true"></span>
           </div>
           <p id="joystick-dir" class="joystick-dir" aria-live="polite">Neutral</p>
         </div>
+      </div>
 
+      <!-- Centro: DETENER, última acción y DEMO -->
+      <div class="centro">
         <button id="btn-detener" class="btn btn-detener" type="button">
-          <i class="bi bi-stop-circle-fill" aria-hidden="true"></i> DETENER
+          <i class="bi bi-stop-circle-fill" aria-hidden="true"></i><span>DETENER</span>
         </button>
 
         <div class="ultima-accion" aria-live="polite">
@@ -113,71 +120,48 @@
             <strong id="ua-comando">—</strong>
           </div>
           <ol class="etapas">
-            <li id="etapa-solicitado"><i class="bi bi-send" aria-hidden="true"></i><span>Solicitado</span></li>
-            <li id="etapa-aceptado"><i class="bi bi-check2-circle" aria-hidden="true"></i><span>Aceptado por API</span></li>
-            <li id="etapa-evento"><i class="bi bi-broadcast-pin" aria-hidden="true"></i><span>Evento recibido</span></li>
+            <li id="etapa-solicitado"><span class="led" aria-hidden="true"></span><span>Solicitado</span></li>
+            <li id="etapa-aceptado"><span class="led" aria-hidden="true"></span><span>Aceptado por API</span></li>
+            <li id="etapa-evento"><span class="led" aria-hidden="true"></span><span>Evento recibido</span></li>
           </ol>
           <p id="ua-detalle" class="ua-detalle">Aún no se ha enviado ningún comando.</p>
         </div>
 
-        <div id="aviso-sesion" class="aviso-sesion" hidden>
-          <i class="bi bi-lock-fill" aria-hidden="true"></i>
-          <span>Inicia sesión como operador para controlar el carrito.</span>
-        </div>
-      </section>
-
-      <div class="columna" id="columna" data-activo="controles">
-        <!-- Pestañas: solo visibles en celular (todo cabe en una pantalla) -->
-        <nav class="pestanas" role="tablist" aria-label="Secciones">
-          <button type="button" role="tab" id="tab-controles" aria-controls="panel-controles" aria-selected="true" data-panel="controles">
-            <i class="bi bi-grid-3x3-gap-fill" aria-hidden="true"></i><span>Controles</span></button>
-          <button type="button" role="tab" id="tab-demo" aria-controls="panel-demo" aria-selected="false" data-panel="demo">
-            <i class="bi bi-play-circle-fill" aria-hidden="true"></i><span>DEMO</span><span id="tab-demo-punto" class="punto" hidden></span></button>
-        </nav>
-        <!-- ===================== Movimientos adicionales ===================== -->
-        <section class="tarjeta panel" id="panel-controles" role="tabpanel" aria-labelledby="titulo-botones">
-          <div class="tarjeta-cab">
-            <h2 id="titulo-botones"><i class="bi bi-grid-3x3-gap-fill" aria-hidden="true"></i> Movimientos</h2>
-            <span class="pista">Mantén presionado</span>
-          </div>
-          <div id="botones-sostenidos" class="rejilla-botones">
-            <p class="cargando">Cargando catálogo…</p>
-          </div>
-          <div class="tarjeta-cab sub">
-            <h3><i class="bi bi-lightning-charge-fill" aria-hidden="true"></i> Funciones</h3>
-            <span class="pista">Un toque</span>
-          </div>
-          <div id="botones-pulso" class="rejilla-botones"></div>
-        </section>
-
-        <!-- ===================== DEMO ===================== -->
-        <section class="tarjeta panel" id="panel-demo" role="tabpanel" aria-labelledby="titulo-demo">
-          <div class="tarjeta-cab">
-            <h2 id="titulo-demo"><i class="bi bi-play-circle-fill" aria-hidden="true"></i> DEMO</h2>
+        <div class="demo" id="panel-demo" aria-labelledby="titulo-demo">
+          <div class="demo-cab">
+            <h3 id="titulo-demo"><i class="bi bi-play-circle-fill" aria-hidden="true"></i> DEMO</h3>
             <span id="demo-insignia" class="insignia" data-estado="inactiva">Inactiva</span>
           </div>
-          <label for="demo-select" class="form-label">DEMO almacenada</label>
-          <select id="demo-select" class="form-select demo-select" disabled>
-            <option>Cargando…</option>
-          </select>
-          <div class="demo-acciones">
-            <button id="btn-demo-iniciar" class="btn btn-rosa" type="button" disabled>
-              <i class="bi bi-play-fill" aria-hidden="true"></i> Iniciar
+          <label for="demo-select" class="visually-hidden">DEMO almacenada</label>
+          <div class="demo-fila">
+            <select id="demo-select" class="form-select demo-select" disabled>
+              <option>Cargando…</option>
+            </select>
+            <button id="btn-demo-iniciar" class="btn btn-mini btn-iniciar" type="button" disabled title="Iniciar DEMO" aria-label="Iniciar DEMO">
+              <i class="bi bi-play-fill" aria-hidden="true"></i>
             </button>
-            <button id="btn-demo-cancelar" class="btn btn-contorno" type="button" disabled>
-              <i class="bi bi-x-octagon" aria-hidden="true"></i> Cancelar
+            <button id="btn-demo-cancelar" class="btn btn-mini btn-cancelar" type="button" disabled title="Cancelar DEMO" aria-label="Cancelar DEMO">
+              <i class="bi bi-x-lg" aria-hidden="true"></i>
             </button>
           </div>
-          <div class="demo-progreso" aria-live="polite">
-            <div class="progress" role="progressbar" aria-label="Avance de la DEMO"
-                 aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-              <div id="demo-barra" class="progress-bar" style="width:0%"></div>
-            </div>
-            <p id="demo-detalle" class="demo-detalle">Selecciona una DEMO y pulsa Iniciar.</p>
+          <div class="progress" role="progressbar" aria-label="Avance de la DEMO"
+               aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <div id="demo-barra" class="progress-bar" style="width:0%"></div>
           </div>
-        </section>
+          <p id="demo-detalle" class="demo-detalle">Selecciona una DEMO y pulsa ▶.</p>
+        </div>
       </div>
-    </div>
+
+      <!-- Botones A B X Y: funciones de un toque -->
+      <div class="lado lado-der">
+        <div id="botones-pulso" class="abxy" aria-label="Funciones: un toque"></div>
+      </div>
+
+      <div id="aviso-sesion" class="aviso-sesion" hidden>
+        <i class="bi bi-lock-fill" aria-hidden="true"></i>
+        <span>Inicia sesión como operador para controlar el carrito.</span>
+      </div>
+    </section>
   </main>
 
   <footer class="pie">
