@@ -29,23 +29,24 @@ API FastAPI en AWS EC2 (Caddy HTTPS/WSS) ──► Stored Procedures ──► A
 ```
 carrito-iot-control/
 ├── index.html               # Estructura semántica
-├── css/estilos.css          # Tema rosa, Mobile First, horizontal y escritorio
-├── img/                     # Favicon propio (SVG + PNG + apple-touch-icon)
-└── js/
-    ├── app.js               # Arranque y enlace de vistas (sin reglas de negocio)
-    ├── config.js            # URL base, WSS, vehículo, rutas y presentación (sin secretos)
-    ├── estado.js            # Estado operacional con suscripciones
-    ├── api/cliente.js       # Cliente REST: Fetch, timeout, errores HTTP y JSON
-    ├── api/websocket.js     # Sesión WSS real: reconexión exponencial y latido ping/pong
-    ├── control/comandos.js  # Coordinador ÚNICO de comandos (cola, prioridad DETENER)
-    ├── control/joystick.js  # Joystick táctil/mouse/teclado
-    ├── control/botones.js   # Botones del catálogo
-    ├── control/teclado.js   # Atajos W A S D / Q / 1-8
-    ├── demo/demos.js        # Selección, inicio, cancelación y progreso de DEMO
-    ├── ui/indicadores.js    # Tres indicadores independientes
-    ├── ui/sesion.js         # Inicio de sesión del operador
-    ├── ui/mensajes.js       # Avisos y mensajes recientes
-    └── utils/               # dom.js (inserción segura), errores.js
+└── assets/
+    ├── css/estilos.css      # Tema rosa, Mobile First, horizontal y escritorio
+    ├── img/                 # Favicon propio (SVG + PNG + apple-touch-icon)
+    └── js/
+        ├── app.js               # Arranque y enlace de vistas (sin reglas de negocio)
+        ├── config.js            # URL base, WSS, vehículo, rutas y presentación (sin secretos)
+        ├── estado.js            # Estado operacional con suscripciones
+        ├── api/cliente.js       # Cliente REST: Fetch, timeout, errores HTTP y JSON
+        ├── api/websocket.js     # Sesión WSS real: reconexión exponencial y latido ping/pong
+        ├── control/comandos.js  # Coordinador ÚNICO de comandos (cola, prioridad DETENER)
+        ├── control/joystick.js  # Joystick táctil/mouse/teclado
+        ├── control/botones.js   # Botones del catálogo
+        ├── control/teclado.js   # Atajos W A S D / Q / 1-8
+        ├── demo/demos.js        # Selección, inicio, cancelación y progreso de DEMO
+        ├── ui/indicadores.js    # Tres indicadores independientes
+        ├── ui/sesion.js         # Inicio de sesión del operador
+        ├── ui/mensajes.js       # Avisos y mensajes recientes
+        └── utils/               # dom.js (inserción segura), errores.js
 ```
 
 ## Seguridad
