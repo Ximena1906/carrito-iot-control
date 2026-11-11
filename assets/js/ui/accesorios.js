@@ -9,16 +9,23 @@
  *    WebSocket), el botón cambia: si estaba encendido se apaga y al revés.
  *    Así cambian igual todas las pestañas abiertas (compu y celular).
  *  - Al recargar la página vuelven a encendidos.
+ *  - Los letreros «Luces ON/OFF» y «Bocina ON/OFF» de arriba solo muestran
+ *    el estado; se cambia únicamente con los botones Y y A (o sus teclas).
  */
 import { crear } from '../utils/dom.js';
 
 const ACCESORIOS = ['LUCES', 'BOCINA'];
+const TEXTO = { LUCES: 'Luces', BOCINA: 'Bocina' };
 const encendido = { LUCES: true, BOCINA: true };
 const vistos = new Set();   // id_evento ya contados (evita cambiar dos veces por el mismo evento)
 
 function pintar() {
   for (const nombre of ACCESORIOS) {
     const on = encendido[nombre];
+    for (const chip of document.querySelectorAll(`.chip-accesorio[data-accesorio="${nombre}"]`)) {
+      chip.dataset.encendido = String(on);
+      chip.querySelector('.texto').textContent = `${TEXTO[nombre]} ${on ? 'ON' : 'OFF'}`;
+    }
     for (const boton of document.querySelectorAll(`.btn-comando[data-comando="${nombre}"]`)) {
       boton.dataset.encendido = String(on);
       boton.setAttribute('aria-pressed', String(on));

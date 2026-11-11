@@ -139,6 +139,15 @@ button, .btn { touch-action: manipulation; }
 .chip-dispositivo[data-conectado="true"] { color: var(--ok); border-color: rgba(52, 211, 153, .5); box-shadow: 0 0 8px rgba(52, 211, 153, .35); }
 .pista { font-size: .75em; color: var(--gris); white-space: nowrap; }
 
+/* Letreros de luces y bocina: solo muestran el estado (cambia con Y y A) */
+.chip-accesorio {
+  display: inline-flex; align-items: center; gap: 5px; font-weight: 800; font-size: .85em; border-radius: 999px;
+  padding: 2px 10px; background: var(--hundido); color: var(--neutro); border: 1px solid var(--borde); white-space: nowrap; line-height: 1.5;
+  transition: color .15s, border-color .15s, box-shadow .15s;
+}
+.chip-accesorio[data-encendido="true"] { color: #fff; border-color: rgba(255, 79, 163, .7); background: rgba(255, 79, 163, .14); box-shadow: 0 0 8px rgba(255, 79, 163, .45); }
+.chip-accesorio[data-encendido="true"] i { color: #ffe066; filter: drop-shadow(0 0 4px rgba(255, 224, 102, .8)); }
+
 
 /* ----------------------------------------------- gatillos y bumpers (hombros) */
 .hombros {
@@ -466,6 +475,8 @@ button, .btn { touch-action: manipulation; }
   .btn-mini { min-height: 34px; width: 38px; }
   .etapas li { font-size: .68em; }
   .aviso-sesion { bottom: calc(var(--u) * -4.4); font-size: .72rem; }
+  .mando-cab { gap: 4px; flex-wrap: nowrap; }
+  .chip-dispositivo, .chip-accesorio { font-size: .8em; padding: 2px 7px; gap: 4px; }
 }
 
 /* Teléfonos bajitos en vertical (p. ej. iPhone SE) */
