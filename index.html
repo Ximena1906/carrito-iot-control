@@ -126,9 +126,18 @@
         </div>
       </section>
 
-      <div class="columna">
+      <div class="columna" id="columna" data-activo="controles">
+        <!-- Pestañas: solo visibles en celular (todo cabe en una pantalla) -->
+        <nav class="pestanas" role="tablist" aria-label="Secciones">
+          <button type="button" role="tab" id="tab-controles" aria-controls="panel-controles" aria-selected="true" data-panel="controles">
+            <i class="bi bi-grid-3x3-gap-fill" aria-hidden="true"></i><span>Controles</span></button>
+          <button type="button" role="tab" id="tab-demo" aria-controls="panel-demo" aria-selected="false" data-panel="demo">
+            <i class="bi bi-play-circle-fill" aria-hidden="true"></i><span>DEMO</span><span id="tab-demo-punto" class="punto" hidden></span></button>
+          <button type="button" role="tab" id="tab-mensajes" aria-controls="panel-mensajes" aria-selected="false" data-panel="mensajes">
+            <i class="bi bi-activity" aria-hidden="true"></i><span>Mensajes</span></button>
+        </nav>
         <!-- ===================== Movimientos adicionales ===================== -->
-        <section class="tarjeta" aria-labelledby="titulo-botones">
+        <section class="tarjeta panel" id="panel-controles" role="tabpanel" aria-labelledby="titulo-botones">
           <div class="tarjeta-cab">
             <h2 id="titulo-botones"><i class="bi bi-grid-3x3-gap-fill" aria-hidden="true"></i> Movimientos</h2>
             <span class="pista">Mantén presionado</span>
@@ -144,7 +153,7 @@
         </section>
 
         <!-- ===================== DEMO ===================== -->
-        <section class="tarjeta" aria-labelledby="titulo-demo">
+        <section class="tarjeta panel" id="panel-demo" role="tabpanel" aria-labelledby="titulo-demo">
           <div class="tarjeta-cab">
             <h2 id="titulo-demo"><i class="bi bi-play-circle-fill" aria-hidden="true"></i> DEMO</h2>
             <span id="demo-insignia" class="insignia" data-estado="inactiva">Inactiva</span>
@@ -171,7 +180,7 @@
         </section>
 
         <!-- ===================== Actividad ===================== -->
-        <section class="tarjeta" aria-labelledby="titulo-actividad">
+        <section class="tarjeta panel" id="panel-mensajes" role="tabpanel" aria-labelledby="titulo-actividad">
           <div class="tarjeta-cab">
             <h2 id="titulo-actividad"><i class="bi bi-activity" aria-hidden="true"></i> Mensajes</h2>
           </div>

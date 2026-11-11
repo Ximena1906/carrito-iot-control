@@ -287,3 +287,144 @@ button, .btn { touch-action: manipulation; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; }
 }
+
+/* =====================================================================
+   MODO APP (celular): todo en una sola pantalla, sin desplazamiento.
+   ===================================================================== */
+.pestanas { display: none; }
+.pestanas .punto { width: 8px; height: 8px; border-radius: 50%; background: var(--rosa); display: inline-block; }
+.pestanas .punto[hidden] { display: none; }
+
+@media (max-width: 767px) and (orientation: portrait), (orientation: landscape) and (max-height: 520px) {
+  html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
+  body { height: 100dvh; }
+  main.contenedor { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 0 10px; }
+
+  /* Encabezado compacto */
+  .barra { padding: calc(6px + env(safe-area-inset-top)) 0 24px; }
+  .barra .contenedor { padding: 0 10px; }
+  .marca img { width: 32px; height: 32px; border-radius: 9px; }
+  .marca h1 { font-size: 1rem; }
+  .marca p { font-size: .7rem; }
+  .btn-sesion { min-height: 36px; padding: 4px 10px; font-size: .78rem; }
+  .chip-sesion { display: none !important; }
+
+  /* Indicadores en una franja */
+  .conectividad { margin-top: -18px; gap: 6px; }
+  .indicador { padding: 6px 7px; border-radius: 11px; border-left-width: 4px; }
+  .indicador .icono { display: none !important; }
+  .ind-titulo { font-size: .56rem; letter-spacing: .2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ind-valor { font-size: .74rem; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ind-valor i { display: none; }
+  .nota-conexion { margin: 5px 0 6px; font-size: .64rem; flex-wrap: nowrap; }
+  .nota-conexion > i, .nota-conexion { white-space: nowrap; overflow: hidden; }
+  .nota-conexion { justify-content: flex-end; }
+  .nota-conexion { color: transparent; font-size: 0; }          /* el texto largo se oculta… */
+  .chip-dispositivo { font-size: .66rem; color: var(--neutro); }  /* …y queda solo el chip del ESP32 */
+  .chip-dispositivo[data-conectado="true"] { color: var(--ok); }
+
+  /* Tablero: control arriba y pestañas abajo, repartiendo el alto disponible */
+  .tablero { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 8px; }
+  .tarjeta { padding: 10px; border-radius: 14px; }
+  /* El control ocupa todo el alto que sobra; el joystick se adapta a ese espacio */
+  .tarjeta-control { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+  .tarjeta-control .tarjeta-cab { display: none; }
+  .zona-joystick { flex: 1; min-height: 0; container-type: size; justify-content: center; }
+  .joystick { --tam: clamp(96px, min(100cqh - 34px, 62vw), 250px); flex: none; }
+  .joystick-dir { margin: 4px 0 6px; font-size: .78rem; padding: 1px 12px; }
+  .btn-detener { min-height: 46px; font-size: 1rem; border-radius: 13px; }
+  .ultima-accion { margin-top: 7px; padding: 6px 8px; border-radius: 11px; }
+  .ua-cab { display: none; }
+  .etapas { margin: 0; gap: 4px; }
+  .etapas li { font-size: .6rem; padding: 4px 2px; flex-direction: row; justify-content: center; gap: 3px; border-radius: 8px; }
+  .ua-detalle { display: none; }
+  .aviso-sesion { margin-top: 6px; padding: 5px 9px; font-size: .72rem; border-radius: 10px; }
+
+  .columna { flex: none; height: 205px; display: flex; flex-direction: column; gap: 6px; }
+  .pestanas {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; background: #fff; padding: 4px;
+    border: 1px solid var(--rosa-borde); border-radius: 13px; flex: none;
+  }
+  .pestanas button {
+    border: 0; background: transparent; color: var(--gris); font-weight: 800; font-size: .78rem; border-radius: 10px;
+    min-height: 36px; display: flex; align-items: center; justify-content: center; gap: 5px;
+  }
+  .pestanas button[aria-selected="true"] { background: var(--rosa); color: #fff; }
+  .pestanas button[aria-selected="true"] .punto { background: #fff; }
+  .columna .panel { display: none; flex: 1; min-height: 0; overflow: auto; overscroll-behavior: contain; }
+  .columna[data-activo="controles"] #panel-controles,
+  .columna[data-activo="demo"] #panel-demo,
+  .columna[data-activo="mensajes"] #panel-mensajes { display: block; }
+  .panel > .tarjeta-cab:first-child { display: none; }
+  .tarjeta-cab.sub { display: none; }            /* movimientos y funciones en una sola rejilla */
+  #botones-pulso { margin-top: 6px; }
+  #panel-demo .form-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+  /* 8 botones en una rejilla compacta de 4 columnas */
+  .rejilla-botones { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+  .btn-comando {
+    min-height: 54px; flex-direction: column; justify-content: center; text-align: center; gap: 2px;
+    padding: 4px 2px; font-size: .64rem; line-height: 1.1; border-radius: 11px;
+  }
+  .btn-comando i { font-size: 1.15rem; }
+  .btn-comando kbd { display: none; }
+
+  .demo-select { min-height: 42px; }
+  .demo-acciones { margin-top: 8px; }
+  .btn-rosa, .btn-contorno { min-height: 42px; }
+  .demo-progreso { margin-top: 8px; }
+  .actividad { max-height: none; }
+  .actividad li { font-size: .7rem; padding: 5px 7px; }
+
+  /* Créditos en una línea al pie */
+  .pie { flex: none; margin-top: 6px; padding: 4px 10px calc(4px + env(safe-area-inset-bottom)); font-size: .68rem; }
+  .aviso-toast { top: calc(10px + env(safe-area-inset-top)); bottom: auto; }
+}
+
+/* Teléfonos bajitos (p. ej. iPhone SE): un poco más compacto */
+@media (max-width: 767px) and (orientation: portrait) and (max-height: 700px) {
+  .marca p { display: none; }
+  .nota-conexion { margin: 3px 0 4px; }
+  .btn-detener { min-height: 42px; }
+  .btn-comando { min-height: 48px; }
+}
+
+@media (max-width: 767px) and (orientation: portrait) and (max-height: 600px) {
+  .ultima-accion { display: none; }
+  .barra { padding-bottom: 20px; }
+}
+
+/* Celular en horizontal: joystick a la izquierda, pestañas a la derecha */
+@media (orientation: landscape) and (max-height: 520px) {
+  .barra { padding-bottom: 20px; }
+  .marca p { display: none; }
+  .tablero { flex-direction: row; }
+  .tarjeta-control { width: 42%; overflow: hidden; }
+  .ultima-accion { display: none; }
+  .columna { width: 58%; height: auto; min-height: 0; }
+  .columna .panel { flex: 1; }
+  .btn-comando { min-height: 46px; }
+}
+
+/* Horizontal muy bajito: encabezado e indicadores mínimos para dejar sitio al joystick */
+@media (orientation: landscape) and (max-height: 520px) {
+  .barra { padding: calc(3px + env(safe-area-inset-top)) 0 16px; }
+  .marca img { width: 26px; height: 26px; border-radius: 7px; }
+  .marca h1 { font-size: .9rem; }
+  .btn-sesion { min-height: 30px; padding: 2px 9px; }
+  .conectividad { margin-top: -13px; }
+  .indicador { padding: 3px 7px; }
+  .ind-titulo { font-size: .5rem; }
+  .ind-valor { font-size: .68rem; }
+  .nota-conexion { display: none; }
+  .tablero { margin-top: 6px; gap: 8px; align-items: stretch; }
+  .tarjeta { padding: 7px; }
+  .joystick-dir { display: none; }
+  .joystick { --tam: clamp(80px, min(100cqh - 6px, 40vw), 220px); }
+  .btn-detener { min-height: 38px; font-size: .9rem; margin-top: 6px; }
+  .pestanas button { min-height: 30px; }
+  .btn-comando { min-height: 40px; font-size: .6rem; }
+  .btn-comando i { font-size: 1rem; }
+  #botones-pulso { margin-top: 5px; }
+  .pie { padding: 2px 10px calc(2px + env(safe-area-inset-bottom)); font-size: .6rem; margin-top: 4px; }
+}

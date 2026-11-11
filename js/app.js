@@ -13,6 +13,7 @@ import { activarTeclado } from './control/teclado.js';
 import { cargarDemos, eventoDemo, iniciarDemos } from './demo/demos.js';
 import { iniciarIndicadores } from './ui/indicadores.js';
 import { iniciarSesionUI } from './ui/sesion.js';
+import { iniciarPestanas } from './ui/pestanas.js';
 import { avisar, registrar } from './ui/mensajes.js';
 import { mensajeDeError } from './utils/errores.js';
 
@@ -126,6 +127,7 @@ iniciarIndicadores();
 const pintarSesion = iniciarSesionUI({ alCambiar: aplicarDisponibilidad });
 suscribir('sesion', pintarSesion);
 iniciarDemos();
+iniciarPestanas();
 activarTeclado();
 
 suscribir('demoEnCurso', (demo) => {

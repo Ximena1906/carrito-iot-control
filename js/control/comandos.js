@@ -34,6 +34,7 @@ function pintar(accion, cambios) {
 
 async function enviar(accion) {
   enVuelo = accion;
+  let exito = false;
   try {
     const r = await api.ejecutarMovimiento(accion.nombre, accion.duracion);
     accion.idEvento = r.id_evento;
@@ -44,6 +45,8 @@ async function enviar(accion) {
       detalle: `HTTP 200 · ${r.comando} (código ${r.codigo}) · ${r.duracion_ms} ms` +
         (r.demo_cancelada ? ' · DEMO cancelada' : ''),
     });
+    accion.detalle = `HTTP 200 · ${r.comando} (código ${r.codigo}) · ${r.duracion_ms} ms`;
+    exito = true;
     if (!accion.renovacion) registrar(`API aceptó ${texto(r.comando)}`, 'ok');
   } catch (error) {
     pintar(accion, { etapa: 'error', detalle: mensajeDeError(error) });
@@ -55,7 +58,18 @@ async function enviar(accion) {
     if (pendiente) {
       const siguiente = pendiente;
       pendiente = null;
-      enviar(siguiente);
+      if (exito && siguiente.nombre === accion.nombre && siguiente.nombre !== COMANDO_DETENER) {
+        // La orden pendiente es igual a la que la API acaba de aceptar: no se reenvía.
+        const ua = obtener('ultimaAccion');
+        if (ua && ua.id === siguiente.id) {
+          actualizar('ultimaAccion', {
+            ...ua, id: accion.id, idEvento: accion.idEvento, detalle: accion.detalle,
+            etapa: eventosRecibidos.has(accion.idEvento) ? 'evento' : 'aceptado',
+          });
+        }
+      } else {
+        enviar(siguiente);
+      }
     }
   }
 }
