@@ -13,6 +13,14 @@ const estado = {
   rds: { estado: 'sin_verificar', latencia: null }, // disponible | no_disponible | sin_verificar
   dispositivo: false,        // señal real del ESP32 (evento "dispositivo")
   ultimaAccion: null,        // { id, comando, etapa, idEvento, detalle }
+
+  // --------------------------------------------------------- MONITOREO (4.2)
+  vista: 'control',          // control | monitoreo
+  monUltimo: null,           // último movimiento/estado reportado (ver monitoreo/sincronizador.js)
+  monHistorial: null,        // null = aún sin cargar; [] = sin movimientos; máx. 10 filas de RDS
+  monCargaEstado: { estado: 'cargando', mensaje: '' },     // cargando | listo | error
+  monCargaHistorial: { estado: 'cargando', mensaje: '' },  // cargando | sincronizando | listo | error
+  monDemo: null,             // DEMO en curso vista por eventos { nombre, paso, total_pasos }
 };
 
 const suscriptores = new Map();

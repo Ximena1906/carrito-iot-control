@@ -6,7 +6,7 @@ import { CONFIG, PRESENTACION } from './config.js';
 import { api } from './api/cliente.js';
 import { ClienteWebSocket } from './api/websocket.js';
 import { actualizar, obtener, puedeMover, suscribir } from './estado.js';
-import { detener, eventoMovimiento, liberarSostenido } from './control/comandos.js';
+import { detener, eventoMovimiento, haySostenido, liberarSostenido } from './control/comandos.js';
 import { crearJoystick } from './control/joystick.js';
 import { habilitarBotones, renderizarBotones } from './control/botones.js';
 import { activarTeclado } from './control/teclado.js';
@@ -15,6 +15,9 @@ import { iniciarIndicadores } from './ui/indicadores.js';
 import { iniciarSesionUI } from './ui/sesion.js';
 import { avisar } from './ui/mensajes.js';
 import { pintarAccesorios, registrarMovimiento } from './ui/accesorios.js';
+import { iniciarNavegacion } from './ui/navegacion.js';
+import { eventoMonitoreo, iniciarSincronizador } from './monitoreo/sincronizador.js';
+import { iniciarVistaMonitoreo } from './monitoreo/vista.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -59,11 +62,18 @@ suscribir('dispositivo', (conectado) => {
   const chip = $('dispositivo-estado');
   chip.dataset.conectado = String(conectado);
   chip.querySelector('span').textContent = conectado ? 'ESP32: conectado' : 'ESP32: sin señal';
+  const mon = $('mon-dispositivo');
+  mon.dataset.conectado = String(conectado);
+  mon.textContent = conectado ? 'ESP32 conectado al servidor' : 'ESP32 sin señal';
 });
+
+// Al salir de CONTROL no debe quedar un movimiento sostenido activo.
+suscribir('vista', (v) => { if (v !== 'control' && haySostenido()) detener(); });
 
 // ------------------------------------------------------------- WebSocket
 function alEventoWs(ev) {
   if (Number(ev.id_vehiculo) !== CONFIG.ID_VEHICULO) return;
+  eventoMonitoreo(ev);   // MONITOREO recibe los mismos eventos de la conexión compartida
   switch (ev.tipo) {
     case 'estado_inicial':
       actualizar('dispositivo', Boolean(ev.dispositivo_conectado));
@@ -92,7 +102,7 @@ async function cargarVehiculo() {
     $('vehiculo-nombre').textContent = vehiculo.nombre || 'Vehículo';
     $('vehiculo-detalle').textContent =
       [vehiculo.modelo, vehiculo.microcontrolador, `ID ${vehiculo.id_vehiculo}`].filter(Boolean).join(' · ');
-    document.title = `${vehiculo.nombre} · Control`;
+    document.title = `${vehiculo.nombre} · ${obtener('vista') === 'monitoreo' ? 'Monitoreo' : 'Control'}`;
 
     const activos = new Map(
       (Array.isArray(comandos) ? comandos : [])
@@ -117,6 +127,9 @@ async function cargarTodo() {
 }
 
 // ------------------------------------------------------------- arranque
+iniciarNavegacion();
+iniciarVistaMonitoreo();
+iniciarSincronizador();
 iniciarIndicadores();
 const pintarSesion = iniciarSesionUI({ alCambiar: aplicarDisponibilidad });
 suscribir('sesion', pintarSesion);

@@ -1,13 +1,16 @@
 # 🎮 Carrito IoT · Aplicación de CONTROL
 
 Aplicación web con diseño de **control tipo gamepad** (oscuro con brillos rosa neón) para manejar desde
-el navegador un **carrito RC con garra** controlado por un **ESP32**. Cada botón llama a una
+el navegador un **carrito RC con garra** controlado por un **ESP32**, y vigilar en tiempo real lo que hace.
+Tiene dos vistas en el mismo sitio: **CONTROL** (práctica 4.1) y **MONITOREO** (práctica 4.2). Cada botón llama a una
 **API FastAPI en AWS**, que guarda la orden en **Amazon RDS** con Stored Procedures y la envía en tiempo
 real al carrito por **WebSocket seguro (WSS)**.
 
 | | |
 |---|---|
 | 🌐 **Sitio publicado** | https://ximena1906.github.io/carrito-iot-control/ |
+| 🎮 **Vista CONTROL** | https://ximena1906.github.io/carrito-iot-control/#/control |
+| 📊 **Vista MONITOREO** | https://ximena1906.github.io/carrito-iot-control/#/monitoreo |
 | 📘 **API (Swagger UI)** | https://carrito-ximena.duckdns.org/docs |
 | 🗂️ **Repositorio de la API** | https://github.com/Ximena1906/carrito-iot-api |
 | 👩‍💻 **Desarrollado por** | Ximena Nava Escamilla |
@@ -17,6 +20,7 @@ real al carrito por **WebSocket seguro (WSS)**.
 ## Contenido
 1. [Capturas](#1-capturas)
 2. [Arquitectura](#2-arquitectura)
+   - [Ampliación 4.2 · MONITOREO](#ampliación-42--monitoreo)
 3. [Cómo usar la aplicación](#3-cómo-usar-la-aplicación)
 4. [Mapa de controles](#4-mapa-de-controles)
 5. [Cómo viaja un comando](#5-cómo-viaja-un-comando)
@@ -44,6 +48,12 @@ real al carrito por **WebSocket seguro (WSS)**.
 |---|---|
 | <img src="docs/capturas/celular.png" alt="Control en celular vertical" width="300"> | <img src="docs/capturas/celular-horizontal.png" alt="Control en celular horizontal" width="520"> |
 
+**MONITOREO**
+
+| Computadora | Celular |
+|---|---|
+| <img src="docs/capturas/monitoreo-escritorio.png" alt="Monitoreo en computadora" width="560"> | <img src="docs/capturas/monitoreo-celular.png" alt="Monitoreo en celular" width="260"> |
+
 ---
 
 ## 2. Arquitectura
@@ -65,6 +75,86 @@ flowchart LR
 
 ---
 
+## Ampliación 4.2 · MONITOREO
+
+MONITOREO **amplía** la aplicación de CONTROL sin reemplazarla: las dos vistas viven en el mismo
+`index.html`, en el mismo repositorio y en el mismo GitHub Pages. Se cambia de vista con las pestañas
+**CONTROL | MONITOREO** (enlaces `#/control` y `#/monitoreo`) **sin recargar la página**, por lo que
+ambas comparten **una sola conexión WSS**, los tres indicadores, el favicon y los créditos.
+
+### Qué muestra
+- **Último movimiento reportado:** nombre, comando, código, vehículo, origen, fecha y hora. Una etiqueta
+  indica de dónde viene el dato: **En vivo · WSS** (evento), **Persistido · RDS** (consulta REST) o
+  **DEMO · paso N de M**. También muestra si el ESP32 está conectado al servidor.
+- **Últimos 10 movimientos:** tabla con **#, Movimiento, Fecha y Hora** (en pantallas amplias también
+  Código, Origen e ID de RDS), del más reciente al más antiguo.
+- Mensajes de **Cargando**, **Sin movimientos**, **Sincronizando**, **Desconectado/Reconectando** y
+  **Error**, con texto e icono (no solo color).
+
+### Contratos reales de la API (Swagger)
+
+| Uso | Contrato |
+|---|---|
+| Último estado | `GET /vehiculos/1/estado` → `id_vehiculo`, `vehiculo`, `comando`, `codigo`, `conectado`, `fecha_actualizacion`, `demo_en_curso` (SP `sp_obtener_estado`) |
+| Historial | `GET /vehiculos/1/historial?limite=10` → lista de `id_historial`, `id_vehiculo`, `comando`, `codigo`, `fecha_hora`, `origen`; máximo 10, del más reciente al más antiguo; **nunca incluye pasos de DEMO** (SP `sp_obtener_historial`) |
+| Salud API | `GET /health` |
+| Diagnóstico RDS | `GET /health/db` |
+| Tiempo real | `wss://carrito-ximena.duckdns.org/ws/vehiculos/1` → `estado_inicial`, `movimiento`, `demo_inicio`, `demo_paso`, `demo_fin`, `demo_cancelada`, `dispositivo`, `ack_dispositivo` (todos con `id_evento`, `id_vehiculo` y `timestamp` UTC) |
+
+Las consultas de MONITOREO son de solo lectura y no requieren token; enviar comandos sí lo requiere.
+
+### Cómo se sincroniza
+
+```mermaid
+sequenceDiagram
+    participant M as MONITOREO
+    participant A as API FastAPI
+    participant D as Amazon RDS
+    Note over M: Al abrir la vista
+    M->>A: GET /estado y GET /historial?limite=10
+    A->>D: sp_obtener_estado · sp_obtener_historial
+    A-->>M: estado + 10 registros
+    Note over M: CONTROL, otra pestaña o un cliente externo mandan un comando
+    A--)M: WSS «movimiento» (ya guardado en RDS)
+    M->>M: Actualiza la tarjeta al instante
+    M->>A: GET /historial?limite=10 (una sola vez por ráfaga)
+    A-->>M: 10 registros confirmados
+    M->>M: Actualiza solo las filas que cambian
+```
+
+- **WSS dispara, REST confirma:** el evento actualiza la tarjeta al instante, pero la tabla **solo**
+  muestra lo que devuelve la API desde RDS; nunca se agrega una fila "a mano".
+- **Sin polling:** el historial se consulta al abrir MONITOREO, al recibir un evento `movimiento`, al
+  reconectar el WSS y con el botón **Actualizar**. Varios eventos seguidos se agrupan en una sola consulta.
+- **Reconexión:** cuando el WSS vuelve a estar **En línea** se consultan otra vez el estado y los
+  10 movimientos, para recuperar lo que haya pasado mientras no había conexión.
+- **DEMO:** los `demo_paso` actualizan la tarjeta (etiqueta **DEMO · paso N de M**) pero **no** la tabla,
+  porque el servidor no guarda los pasos de una DEMO en el historial individual.
+- **Duplicados y orden:** se descartan eventos con `id_evento` repetido, eventos de otro vehículo y
+  filas con `id_historial` repetido. La tarjeta solo acepta un dato si su fecha no es anterior a la que
+  ya muestra, y las respuestas REST de una consulta superada se descartan (contador de solicitudes).
+- **Fechas:** la API devuelve las fechas de RDS en UTC sin zona (`2026-11-11T23:57:58`) y los eventos
+  WSS en UTC con zona. Se interpretan como UTC y se muestran en la zona horaria del navegador
+  (en México, `America/Mexico_City`, UTC−06:00). Si falta una fecha, se muestra «—»: nunca se inventa.
+
+> **Evento recibido ≠ registro persistido ≠ ejecución física.** Un evento WSS confirma que el servidor
+> publicó la orden; la tabla confirma que quedó guardada en RDS; ninguno de los dos comprueba que el
+> carrito se haya movido.
+
+### Mapa de módulos de la ampliación
+
+| Archivo | Responsabilidad |
+|---|---|
+| `assets/js/ui/navegacion.js` | Pestañas CONTROL/MONITOREO con `#/control` y `#/monitoreo`, sin recargar |
+| `assets/js/monitoreo/sincronizador.js` | Datos de MONITOREO (sin DOM): carga REST, eventos WSS, deduplicación, orden y reconexión |
+| `assets/js/monitoreo/vista.js` | Tarjeta del último movimiento y tabla de 10 filas (todo con `textContent`) |
+| `assets/js/utils/fechas.js` | Lectura de fechas de la API en UTC y formato local de fecha y hora |
+| `assets/js/api/cliente.js` | Se agregó `historial()`; el resto del cliente REST es el de CONTROL |
+| `assets/js/estado.js` | Se agregaron las claves de la vista y de MONITOREO |
+| `assets/js/app.js` | Reparte los eventos de la **única** conexión WSS a CONTROL y a MONITOREO |
+
+---
+
 ## 3. Cómo usar la aplicación
 
 1. Abre el sitio. Los tres indicadores de arriba deben ponerse en **verde**.
@@ -72,8 +162,11 @@ flowchart LR
    bloqueados y aparece el aviso *«Inicia sesión como operador para controlar el carrito»*.
 3. Revisa el chip **ESP32**: si dice **conectado**, el carrito físico recibirá las órdenes.
 4. Usa el joystick, los gatillos, los botones A B X Y o el teclado.
-5. Para parar todo en cualquier momento: botón rojo **DETENER** o tecla **Q**.
-6. Al terminar, presiona **Salir**. El token se borra también al cerrar la pestaña.
+5. Para parar todo en cualquier momento: botón rojo **DETENER** o tecla **Q** (la tecla Q funciona en
+   las dos vistas; las demás teclas solo en CONTROL).
+6. Abre la pestaña **MONITOREO** para ver el último movimiento y los 10 más recientes. Se actualiza solo,
+   también con comandos enviados desde otra pestaña, otro dispositivo o Swagger.
+7. Al terminar, presiona **Salir**. El token se borra también al cerrar la pestaña.
 
 ---
 
@@ -202,6 +295,8 @@ la cuenta:
 - **Computadora y celular acostado:** gamepad horizontal con empuñaduras.
 - **Celular vertical:** gatillos arriba, joystick y A B X Y en medio, DETENER y DEMO abajo.
 - En celulares se evita que un botón se quede "iluminado" después de tocarlo (`@media (hover: hover)`).
+- **MONITOREO** tampoco mueve la página: si la tabla no cabe, se desplaza solo el contenido de la vista,
+  y en celular la tabla muestra las columnas esenciales (#, Movimiento, Fecha, Hora) sin desbordarse.
 
 ---
 
@@ -223,7 +318,7 @@ la cuenta:
 carrito-iot-control/
 ├── index.html                   # Estructura de la página (encabezado, gamepad, diálogo de sesión)
 ├── README.md
-├── docs/capturas/               # Imágenes de este README
+├── docs/capturas/               # Imágenes de este README (CONTROL y MONITOREO)
 └── assets/
     ├── css/estilos.css          # Gamepad oscuro rosa neón, sin scroll en celular y escritorio
     ├── img/                     # Favicon propio (SVG + PNG + apple-touch-icon)
@@ -238,11 +333,14 @@ carrito-iot-control/
         ├── control/botones.js   # Botones del catálogo y su lugar en el gamepad
         ├── control/teclado.js   # Atajos W A S D / Q / 1–8
         ├── demo/demos.js        # Selección, inicio, cancelación y progreso de la DEMO
+        ├── monitoreo/sincronizador.js # MONITOREO: REST + WSS, deduplicación, orden y reconexión
+        ├── monitoreo/vista.js   # MONITOREO: tarjeta del último movimiento y tabla de 10
         ├── ui/indicadores.js    # Indicadores de WebSocket, servidor AWS y RDS
         ├── ui/sesion.js         # Inicio y cierre de sesión del operador
         ├── ui/mensajes.js       # Avisos breves (toast)
         ├── ui/accesorios.js     # Luces y bocina prendidas/apagadas (ON/OFF)
-        └── utils/               # dom.js (inserción segura), errores.js
+        ├── ui/navegacion.js     # Pestañas CONTROL | MONITOREO (#/control, #/monitoreo)
+        └── utils/               # dom.js (inserción segura), errores.js, fechas.js
 ```
 
 ---
@@ -289,7 +387,20 @@ Pruebas automáticas en navegador (Chrome) contra la API:
   (inicio, pasos, cancelación y `DETENER`) y recuperación tras una caída de la API.
 - **Luces y bocina (10 pruebas):** inicio en ON, cambio con Y, A y tecla 8, letreros sincronizados,
   sincronización entre pestañas y regreso a ON al recargar.
-- **Diseño:** sin desplazamiento y con todos los botones visibles y tocables en computadora
+- **MONITOREO (25 pruebas, casos A–E de la práctica 4.2):**
+  - **A · Carga inicial:** al abrir `#/monitoreo` se hacen `GET /estado` y `GET /historial?limite=10`;
+    la tabla coincide fila por fila con la API y la tarjeta con el estado de RDS.
+  - **B · Evento en vivo:** AVANZAR, MOVER_DERECHA y DETENER enviados desde **otro cliente** cambian la
+    tarjeta al instante (etiqueta *En vivo · WSS*) y la tabla queda en orden DETENER, MOVER_DERECHA,
+    AVANZAR con **una sola** consulta al historial y **una sola** conexión WSS.
+  - **C · Límite:** después de 12 movimientos más, la tabla muestra exactamente los 10 más recientes,
+    numerados del 1 al 10 y sin duplicados. Se ignoran eventos de otro vehículo y eventos atrasados.
+  - **D · Reconexión:** al caer la API el indicador WSS pasa a *Desconectado* y la tarjeta avisa que
+    muestra el último valor conocido; al volver, el WSS queda *En línea*, se repite la consulta REST y la
+    tabla coincide con RDS.
+  - **E · DEMO:** la tarjeta muestra *DEMO · paso N de M* y la tabla queda **igual** antes y después.
+- **Diseño:** CONTROL sin desplazamiento y con todos los botones visibles y tocables; MONITOREO sin
+  desplazamiento horizontal y con las columnas esenciales visibles. Probado en computadora
   (1920×960, 1366×768, 1280×640), tablet (820×1100), iPhone 14, iPhone SE, Android y celular horizontal.
 - **Verificación independiente del WebSocket:** con un cliente externo (Thunder Client, Postman o una
   extensión de VS Code/Chrome) conectado a `wss://carrito-ximena.duckdns.org/ws/vehiculos/1`, cada acción
@@ -308,6 +419,7 @@ Pruebas automáticas en navegador (Chrome) contra la API:
 | *pages build and deployment* con X roja o *Startup failure* | Falla temporal de GitHub | Revisa https://www.githubstatus.com y usa **Re-run all jobs** cuando se recupere |
 | Chip **ESP32: sin señal** | El carrito está apagado o en una red que bloquea DuckDNS | Enciende el carrito y conéctalo al punto de acceso del celular |
 | «La sesión expiró» | El token JWT caducó | Vuelve a iniciar sesión |
+| La hora de MONITOREO no coincide con el reloj | La base no guarda en UTC | Las fechas se leen como UTC (zona por defecto de RDS); compara la hora de un movimiento recién enviado con la del celular |
 
 ---
 

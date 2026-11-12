@@ -33,6 +33,7 @@ export const RUTAS = Object.freeze({
   vehiculo: (v) => `/vehiculos/${v}`,
   comandos: (v) => `/vehiculos/${v}/comandos`,
   estado: (v) => `/vehiculos/${v}/estado`,
+  historial: (v, limite) => `/vehiculos/${v}/historial?limite=${limite}`,
   demos: (v) => `/vehiculos/${v}/demos`,
   movimiento: (v) => `/vehiculos/${v}/movimientos`,
   iniciarDemo: (v, d) => `/vehiculos/${v}/demos/${d}/iniciar`,

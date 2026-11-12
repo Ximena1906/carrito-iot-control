@@ -34,6 +34,16 @@
       </div>
     </div>
 
+    <!-- ===================== Navegación ===================== -->
+    <nav class="vistas" aria-label="Secciones de la aplicación">
+      <a class="vista-enlace" data-vista="control" href="#/control" aria-current="page">
+        <i class="bi bi-controller" aria-hidden="true"></i><span>CONTROL</span>
+      </a>
+      <a class="vista-enlace" data-vista="monitoreo" href="#/monitoreo">
+        <i class="bi bi-activity" aria-hidden="true"></i><span>MONITOREO</span>
+      </a>
+    </nav>
+
     <!-- ===================== Conectividad ===================== -->
     <section class="conectividad" aria-labelledby="titulo-conectividad">
       <h2 id="titulo-conectividad" class="visually-hidden">Estado de conectividad</h2>
@@ -72,8 +82,8 @@
     </div>
   </header>
 
-  <!-- ===================== Control (tipo gamepad) ===================== -->
-  <main class="escenario">
+  <!-- ===================== Vista CONTROL (tipo gamepad) ===================== -->
+  <main class="escenario" id="vista-control">
     <section id="control" class="mando" aria-labelledby="titulo-control">
       <h2 id="titulo-control" class="visually-hidden">Control del carrito</h2>
 
@@ -168,6 +178,75 @@
         <span>Inicia sesión como operador para controlar el carrito.</span>
       </div>
     </section>
+  </main>
+
+  <!-- ===================== Vista MONITOREO (4.2) ===================== -->
+  <main class="monitoreo" id="vista-monitoreo" aria-labelledby="titulo-monitoreo" hidden>
+    <h2 id="titulo-monitoreo" class="visually-hidden">Monitoreo del vehículo en tiempo real</h2>
+    <div class="mon-rejilla">
+      <!-- Último movimiento -->
+      <section class="mon-tarjeta" id="mon-tarjeta" data-estado="cargando" aria-labelledby="titulo-ultimo" aria-live="polite">
+        <div class="mon-cab">
+          <h3 id="titulo-ultimo"><i class="bi bi-lightning-charge-fill" aria-hidden="true"></i> Último movimiento reportado</h3>
+          <span id="mon-fuente" class="mon-fuente"></span>
+        </div>
+        <div class="mon-principal">
+          <span class="mon-icono" aria-hidden="true"><i id="mon-comando-icono" class="bi bi-hourglass-split"></i></span>
+          <div class="mon-nombre">
+            <strong id="mon-comando">Cargando…</strong>
+            <code id="mon-comando-clave"></code>
+          </div>
+        </div>
+        <dl class="mon-datos">
+          <div><dt>Vehículo</dt><dd id="mon-vehiculo">—</dd></div>
+          <div><dt>Código</dt><dd id="mon-codigo">—</dd></div>
+          <div><dt>Origen</dt><dd id="mon-origen">—</dd></div>
+          <div class="mon-fisico"><dt>Conexión física</dt><dd id="mon-dispositivo" data-conectado="false">ESP32 sin señal</dd></div>
+          <div><dt><i class="bi bi-calendar3" aria-hidden="true"></i> Fecha</dt><dd id="mon-fecha">—</dd></div>
+          <div><dt><i class="bi bi-clock" aria-hidden="true"></i> Hora</dt><dd id="mon-hora">—</dd></div>
+        </dl>
+        <p id="mon-demo" class="mon-demo" hidden><i class="bi bi-play-circle-fill" aria-hidden="true"></i> <span id="mon-demo-texto"></span></p>
+        <p id="mon-aviso" class="mon-aviso" role="status" hidden></p>
+        <p class="mon-nota">
+          <i class="bi bi-info-circle" aria-hidden="true"></i>
+          Último movimiento <b>reportado</b> por el servidor. No confirma que el carrito lo haya ejecutado físicamente.
+        </p>
+      </section>
+
+      <!-- Tabla de 10 movimientos -->
+      <section class="mon-historial" aria-labelledby="titulo-historial">
+        <div class="mon-cab">
+          <h3 id="titulo-historial"><i class="bi bi-list-ol" aria-hidden="true"></i> Últimos 10 movimientos</h3>
+          <span id="mon-cuenta" class="mon-cuenta"></span>
+          <button id="mon-actualizar" class="btn btn-mini btn-actualizar" type="button" title="Volver a consultar el estado y el historial" aria-label="Actualizar desde la API">
+            <i class="bi bi-arrow-clockwise" aria-hidden="true"></i>
+          </button>
+        </div>
+        <p id="mon-tabla-estado" class="mon-tabla-estado" data-estado="cargando" role="status"></p>
+        <div class="mon-tabla-caja">
+          <table class="mon-tabla">
+            <caption class="visually-hidden">Últimos 10 movimientos individuales guardados en Amazon RDS, del más reciente al más antiguo</caption>
+            <thead>
+              <tr>
+                <th scope="col" class="col-num">#</th>
+                <th scope="col" class="col-mov">Movimiento</th>
+                <th scope="col" class="col-cod">Código</th>
+                <th scope="col" class="col-origen">Origen</th>
+                <th scope="col" class="col-fecha">Fecha</th>
+                <th scope="col" class="col-hora">Hora</th>
+                <th scope="col" class="col-id">ID</th>
+              </tr>
+            </thead>
+            <tbody id="mon-tabla-cuerpo"></tbody>
+          </table>
+        </div>
+        <p class="mon-nota">
+          <i class="bi bi-database" aria-hidden="true"></i>
+          Movimientos individuales guardados en Amazon RDS. Los pasos de una DEMO no se guardan aquí.
+          Hora local: <span id="mon-zona"></span>.
+        </p>
+      </section>
+    </div>
   </main>
 
   <footer class="pie">

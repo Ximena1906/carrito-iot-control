@@ -83,7 +83,9 @@ export const api = {
 
   vehiculo: () => solicitar(RUTAS.vehiculo(V())),
   comandos: () => solicitar(RUTAS.comandos(V())),
-  estado: () => solicitar(RUTAS.estado(V())),
+  estado: (opts) => solicitar(RUTAS.estado(V()), opts),
+  /** Últimos movimientos INDIVIDUALES guardados en RDS (la API devuelve máximo 10, del más reciente al más antiguo). */
+  historial: (limite = 10, opts) => solicitar(RUTAS.historial(V(), limite), opts),
   demos: () => solicitar(RUTAS.demos(V())),
   demoEnCurso: () => solicitar(RUTAS.demoEnCurso(V())),
 
